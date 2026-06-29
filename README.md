@@ -7,11 +7,12 @@ Bundy is an interactive developer tool and testing sandbox designed to observe t
 ## 📋 Table of Contents
 
 1. [Core Concepts](#-core-concepts)
-2. [Features & Architecture](#-features--architecture)
-3. [Installation & Setup](#-installation--logo-setup)
-4. [Running the Application](#-running-the-application)
-5. [Interactive Sandbox Guide](#-interactive-sandbox-guide)
-6. [Bounty Infrastructure Providers](#-bounty-infrastructure-providers)
+2. [README Questions](#-readme-questions)
+3. [Features & Architecture](#-features--architecture)
+4. [Installation & Setup](#-installation--logo-setup)
+5. [Running the Application](#-running-the-application)
+6. [Interactive Sandbox Guide](#-interactive-sandbox-guide)
+7. [Bounty Infrastructure Providers](#-bounty-infrastructure-providers)
 
 ---
 
@@ -26,25 +27,31 @@ Solana transactions move through a complex lifecycle before landing on-chain. Un
 
 ---
 
-## 🧠 Core Solana Transaction Architecture Q&A
+## ❓ README Questions
 
-### 1. What does the latency delta between `processed` and `confirmed` commitment stages reveal about real-time network health?
+### Question 1
 
-- **Analysis**: `processed` commitment represents the timestamp when the leader validator has locally executed your transaction and written it into a proposed block. `confirmed` commitment represents the timestamp when a supermajority (66.6%+) of the Solana validator set has successfully voted on and confirmed that block.
-- **Network Health Implications**: The delta measures the **consensus convergence latency** and **shred propagation efficiency** of the network.
+What does the delta between `processed_at` and `confirmed_at` tell you about network health at the time of submission?
+
+- **Answer**: `processed_at` is the timestamp when the leader validator has locally executed your transaction and written it into a proposed block. `confirmed_at` is when a supermajority (66.6%+) of the Solana validator set has successfully voted on and confirmed that block.
+- **Network Health Analysis**: The delta measures the **consensus convergence latency** and **shred propagation efficiency** of the network.
   - **Healthy Network**: Under low congestion, this delta ranges from **1.2 to 2.0 seconds**, indicating that validators are voting quickly and shreds are propagating across the globe with minimal packet loss.
-  - **Congested Network**: If the delta spikes (e.g. 5+ seconds or timeouts), it indicates validator CPU saturation, fork voting disputes, or high network packet drop rates. This means the network is struggling to reach consensus on blocks.
+  - **Unhealthy Network**: If the delta spikes (e.g. 5+ seconds or timeouts), it indicates validator CPU saturation, fork voting disputes, or high network packet drop rates. This means the network is struggling to reach consensus on blocks.
 
-### 2. Why is finalized commitment unsafe when fetching blockhashes for time-sensitive transactions?
+### Question 2
 
-- **Analysis**: A blockhash on Solana is only valid for **150 slots** (approximately 60 seconds).
+Why should you never use finalized commitment when fetching a blockhash for a time-sensitive transaction?
+
+- **Answer**: A blockhash on Solana is only valid for **150 slots** (approximately 60 seconds).
   - When you request a blockhash at the `finalized` commitment level, you are receiving a blockhash from a block that has already been voted on by the network for at least **31+ slots** (taking about 12–15 seconds to reach finality).
   - Therefore, the blockhash is already ~15 seconds old when your code receives it, reducing its effective Time-To-Live (TTL) from 60 seconds to ~45 seconds.
   - If the network experiences any queueing delays, skipped slots, or Jito engine processing latency, your transaction will quickly fail with an `ExpiredBlockhash` error. For time-sensitive operations, always use `processed` or `confirmed` commitment levels to get the absolute freshest blockhash.
 
-### 3. What is the impact on Jito bundles when a designated leader skips their scheduled block production slot?
+### Question 3
 
-- **Analysis**: Jito bundles are sent directly to Jito Block Engines, which construct blocks exclusively for Jito-enabled validator slots in the Solana leader schedule.
+What happens to your bundle if the Jito leader skips their slot?
+
+- **Answer**: Jito bundles are sent directly to Jito Block Engines, which construct blocks exclusively for Jito-enabled validator slots in the Solana leader schedule.
   - If the Jito validator scheduled for a slot **skips** it (due to hardware failure, voting delays, or network partitions), no block is produced for that slot.
   - As a result, the Jito Block Engine simply **drops and discards the bundle**. The transactions inside the bundle are never executed, they never land on-chain, and no tip is deducted from your account.
   - To land, the bundle must be rebuilt with a fresh blockhash and resubmitted to the block engine for the next scheduled Jito leader.
