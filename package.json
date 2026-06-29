@@ -1,0 +1,49 @@
+{
+  "name": "bundy-solana-jito-sandbox",
+  "version": "1.0.0",
+  "description": "Bundy: Solana Jito Transaction Sandbox & Developer Tool",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev:backend": "ts-node src/server.ts",
+    "dev:frontend": "vite",
+    "build:frontend": "tsc && vite build",
+    "build:backend": "tsc",
+    "start": "node dist/server.js",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "keywords": [
+    "solana",
+    "jito",
+    "grpc",
+    "lifecycle",
+    "ai",
+    "agent"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@google/genai": "^2.10.0",
+    "@solana/web3.js": "^1.95.3",
+    "@triton-one/yellowstone-grpc": "^5.0.9",
+    "bs58": "^6.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "openai": "^6.45.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.9",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/ws": "^8.5.10",
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^8.2.2",
+    "lucide-react": "^0.395.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.2",
+    "vite": "^5.3.1"
+  }
+}
